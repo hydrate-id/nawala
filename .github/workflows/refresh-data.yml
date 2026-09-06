@@ -1,0 +1,49 @@
+name: refresh-data
+
+on:
+  schedule:
+    # daily 03:00 UTC — Komdigi list updates regularly
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Refresh blocklist
+        run: cargo run --release --example refresh
+
+      - name: Commit if data changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --exit-code -- data/trustpositif.txt.gz; then
+            echo "list unchanged, skipping commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add data/trustpositif.txt.gz
+          git commit -m "chore: refresh data trustpositif"
+          git push
+          echo "committed & pushed: blocklist updated"
