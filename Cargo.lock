@@ -544,22 +544,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a756c3fac73139e83f14c2d742155dd2b78d3ee56597b419a0579b7bdd6dd78"
 
 [[package]]
-name = "is-blocked"
-version = "0.1.0"
-dependencies = [
- "axum",
- "dotenvy",
- "flate2",
- "hyper",
- "serde",
- "serde_json",
- "tokio",
- "tower",
- "ureq",
- "vercel_runtime",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -635,6 +619,22 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "nawala"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "dotenvy",
+ "flate2",
+ "hyper",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tower",
+ "ureq",
+ "vercel_runtime",
 ]
 
 [[package]]
