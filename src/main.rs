@@ -5,6 +5,7 @@ use std::time::{Duration, Instant};
 use axum::extract::Query;
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
+use axum::routing::get;
 use axum::{Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
@@ -59,11 +60,19 @@ fn valid_domain(domain: &str) -> bool {
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     dotenvy::dotenv().ok();
-    let router = Router::new().fallback(check);
+    let router = Router::new().route("/health", get(health)).fallback(check);
     let app = ServiceBuilder::new()
         .layer(VercelLayer::new())
         .service(router);
     run(app).await
+}
+
+async fn health() -> Response {
+    let mut r = json_resp(StatusCode::OK, json!({ "status": "ok" }));
+    if let Ok(v) = hyper::header::HeaderValue::from_str("no-cache") {
+        r.headers_mut().insert(hyper::header::CACHE_CONTROL, v);
+    }
+    r
 }
 
 async fn check(Query(p): Query<Params>, headers: HeaderMap) -> Response {
