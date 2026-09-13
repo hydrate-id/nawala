@@ -158,11 +158,7 @@ mod tests {
     // (definitely blocked) plus well-known clean domains
     #[test]
     fn real_list_detected() {
-        let blocked = [
-            "partaikomunisindonesia.wordpress.com",
-            "mantanmuslim.com",
-            "gudangblackmarket.com",
-        ];
+        let blocked = ["kucoin.com", "binance.com", "vimeo.com"];
         let clean = ["google.com", "microsoft.com", "gstatic.com"];
         for d in blocked {
             assert_eq!(is_blocked(d).unwrap(), true, "{d} should be blocked");
